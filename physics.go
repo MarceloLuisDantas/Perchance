@@ -1,0 +1,41 @@
+package main
+
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+func CheckCollisionSphereMap(s *Sphere) {
+	if s.Position.X-s.Radius <= 20 || s.Position.X+s.Radius >= 780 {
+		s.Velocity.X *= -1
+	}
+
+	if s.Position.Y-s.Radius <= 200 || s.Position.Y+s.Radius >= 780 {
+		s.Velocity.Y *= -1
+	}
+}
+
+func CheckCollisionSpheres(s1, s2 *Sphere) bool {
+	collide := false
+	if rl.CheckCollisionCircles(s1.Position, s1.Radius, s2.Position, s2.Radius) {
+		collide = true
+		normalized_pos := rl.Vector2Subtract(s1.Position, s2.Position)
+		distance := rl.Vector2Length(normalized_pos)
+		normalized_pos = rl.Vector2Scale(normalized_pos, 1.0/distance)
+		relative_vel := rl.Vector2Subtract(s1.Velocity, s2.Velocity)
+		angular_vel := rl.Vector2DotProduct(relative_vel, normalized_pos)
+		if angular_vel > 0 {
+			return collide
+		}
+
+		scalar_impulse := -(1 + 1.0) * angular_vel
+		scalar_impulse /= (1.0/s1.Mass + 1.0/s2.Mass)
+		impulse := rl.Vector2Scale(normalized_pos, scalar_impulse)
+		s1.Velocity = rl.Vector2Add(s1.Velocity, rl.Vector2Scale(impulse, 1.0/s1.Mass))
+		s2.Velocity = rl.Vector2Subtract(s2.Velocity, rl.Vector2Scale(impulse, 1.0/s2.Mass))
+	}
+
+	CheckCollisionSphereMap(s1)
+	CheckCollisionSphereMap(s2)
+
+	return collide
+}
