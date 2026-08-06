@@ -1,9 +1,15 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"strconv"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type Sphere struct {
 	Name     string
+	Damage   int
+	Hp       int
 	Radius   float32
 	Color    rl.Color
 	Position rl.Vector2
@@ -12,11 +18,15 @@ type Sphere struct {
 }
 
 func NewSphere(
-	name string, radius float32, color rl.Color,
-	initial_pos rl.Vector2, initial_vel rl.Vector2,
+	name string, damage int, hp int,
+	radius float32, color rl.Color,
+	initial_pos rl.Vector2,
+	initial_vel rl.Vector2,
 ) Sphere {
 	s := Sphere{
 		Name:     name,
+		Damage:   damage,
+		Hp:       hp,
 		Radius:   radius,
 		Color:    color,
 		Position: initial_pos,
@@ -32,6 +42,14 @@ func (self *Sphere) Draw() {
 		int32(self.Position.Y),
 		self.Radius,
 		self.Color,
+	)
+
+	text_s := rl.MeasureText(strconv.Itoa(self.Hp), 30)
+	rl.DrawText(
+		strconv.Itoa(self.Hp),
+		int32(self.Position.X-float32(text_s/2)),
+		int32(self.Position.Y+self.Radius),
+		30, rl.Black,
 	)
 }
 
