@@ -34,8 +34,5 @@ func CheckCollisionSpheres(s1, s2 *Sphere) bool {
 		s2.Velocity = rl.Vector2Subtract(s2.Velocity, rl.Vector2Scale(impulse, 1.0/s2.Mass))
 	}
 
-	CheckCollisionSphereMap(s1)
-	CheckCollisionSphereMap(s2)
-
 	return collide
 }

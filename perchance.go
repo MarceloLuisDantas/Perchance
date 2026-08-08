@@ -7,41 +7,54 @@ func main() {
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(60)
 
-	spheres := make([]Sphere, 2)
-	spheres[0] = NewSphere(
+	var spheres []Sphere
+	spheres = append(spheres, NewSphere(
 		"Badingugilius", 9, 420, 50, rl.Red,
 		rl.Vector2{X: 200, Y: 450},
 		rl.Vector2{X: 5, Y: 0},
-	)
-	spheres[1] = NewSphere(
+	))
+
+	spheres = append(spheres, NewSphere(
 		"Smungulungus", 10, 400, 50, rl.Blue,
 		rl.Vector2{X: 600, Y: 500},
 		rl.Vector2{X: -10, Y: 0},
-	)
+	))
 
 	for !rl.WindowShouldClose() {
-		if CheckCollisionSpheres(&spheres[0], &spheres[1]) {
-			spheres[0].Hp -= spheres[1].Damage
-			spheres[1].Hp -= spheres[0].Damage
+		for _, s := range spheres {
+			CheckCollisionSphereMap(&s)
 		}
 
-		spheres[0].Move()
-		spheres[1].Move()
+		for i := 0; i < len(spheres)-2; i++ {
+			s1 := &spheres[i]
+			for j := i + 1; j < len(spheres)-1; j++ {
+				s2 := &spheres[j]
+				if CheckCollisionSpheres(s1, s2) {
+					s1.Hp -= s2.Damage
+					s2.Hp -= s1.Damage
+				}
+			}
+		}
+
+		for i := range spheres {
+			if spheres[i].Hp <= 0 {
+				spheres = append(spheres[:i], spheres[i+1:]...)
+			}
+			spheres[i].Move()
+		}
 
 		rl.BeginDrawing()
 
 		rl.ClearBackground(rl.White)
 		rl.DrawRectangleLinesEx(
-			rl.Rectangle{X: 20, Y: 200, Width: 760, Height: 580},
+			rl.Rectangle{
+				X: 20, Y: 200, Width: 760, Height: 580,
+			},
 			5, rl.Black,
 		)
 
-		if spheres[0].Hp > 0 {
-			spheres[0].Draw()
-		}
-
-		if spheres[1].Hp > 0 {
-			spheres[1].Draw()
+		for i := range spheres {
+			spheres[i].Draw()
 		}
 
 		rl.EndDrawing()
