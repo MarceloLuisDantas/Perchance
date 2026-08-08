@@ -15,6 +15,7 @@ type Sphere struct {
 	Position rl.Vector2
 	Velocity rl.Vector2
 	Mass     float32
+	Alive    bool
 }
 
 func NewSphere(
@@ -32,6 +33,7 @@ func NewSphere(
 		Position: initial_pos,
 		Velocity: initial_vel,
 		Mass:     1,
+		Alive:    true,
 	}
 	return s
 }

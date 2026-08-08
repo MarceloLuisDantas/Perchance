@@ -15,16 +15,16 @@ func CheckCollisionSphereMap(s *Sphere) {
 }
 
 func CheckCollisionSpheres(s1, s2 *Sphere) bool {
-	collide := false
+	collided := false
 	if rl.CheckCollisionCircles(s1.Position, s1.Radius, s2.Position, s2.Radius) {
-		collide = true
+		collided = true
 		normalized_pos := rl.Vector2Subtract(s1.Position, s2.Position)
 		distance := rl.Vector2Length(normalized_pos)
 		normalized_pos = rl.Vector2Scale(normalized_pos, 1.0/distance)
 		relative_vel := rl.Vector2Subtract(s1.Velocity, s2.Velocity)
 		angular_vel := rl.Vector2DotProduct(relative_vel, normalized_pos)
 		if angular_vel > 0 {
-			return collide
+			return collided
 		}
 
 		scalar_impulse := -(1 + 1.0) * angular_vel
@@ -34,5 +34,27 @@ func CheckCollisionSpheres(s1, s2 *Sphere) bool {
 		s2.Velocity = rl.Vector2Subtract(s2.Velocity, rl.Vector2Scale(impulse, 1.0/s2.Mass))
 	}
 
-	return collide
+	return collided
+}
+
+func RunPhysics(spheres []Sphere) {
+	for i := range spheres {
+		CheckCollisionSphereMap(&spheres[i])
+	}
+	for i := 0; i < len(spheres)-1; i++ {
+		for j := i + 1; j < len(spheres); j++ {
+			if !spheres[i].Alive || !spheres[j].Alive {
+				continue
+			}
+
+			if CheckCollisionSpheres(&spheres[i], &spheres[j]) {
+				spheres[i].Hp -= spheres[j].Damage
+				spheres[j].Hp -= spheres[i].Damage
+			}
+		}
+	}
+
+	for i := range spheres {
+		spheres[i].Move()
+	}
 }
