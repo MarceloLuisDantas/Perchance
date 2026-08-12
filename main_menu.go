@@ -34,7 +34,7 @@ func NewMainMenu() MainMenu {
 	)
 
 	mm.Button[1] = Components.NewButton(
-		"END", 50, WIDTH/2, HEIGHT/2, 200, 55, rl.Black,
+		"EXIT", 50, WIDTH/2, HEIGHT/2, 200, 55, rl.Black,
 	)
 
 	return mm
@@ -50,14 +50,16 @@ func (self *MainMenu) Render() {
 	}
 }
 
-func (self *MainMenu) Update() (bool, string) {
+func (self *MainMenu) Update() string {
 	mouse := rl.GetMousePosition()
 	for _, b := range self.Button {
-		if (mouse.X >= b.Body.X) && (mouse.X <= b.Body.X+b.Body.Width) && (mouse.Y >= b.Body.Y) && (mouse.Y <= b.Body.Y+b.Body.Height) {
-			if rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
-				return true, b.Label
-			}
+		if !((mouse.X >= b.Body.X) && (mouse.X <= b.Body.X+b.Body.Width) && (mouse.Y >= b.Body.Y) && (mouse.Y <= b.Body.Y+b.Body.Height)) {
+			continue
+		}
+
+		if rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
+			return b.Label
 		}
 	}
-	return false, ""
+	return "none"
 }

@@ -46,6 +46,52 @@ func (b *Button) Render() {
 	}
 }
 
+type BorderLessButton struct {
+	Label string
+	Font  int32
+	Body  rl.Rectangle
+	Color rl.Color
+}
+
+func NewBorderlessButton(
+	label string, font int32, x int32, y int32,
+	width int32, height int32, color rl.Color,
+) BorderLessButton {
+	return BorderLessButton{
+		Label: label,
+		Font:  font,
+		Body: rl.Rectangle{
+			X:      float32(x),
+			Y:      float32(y),
+			Width:  float32(width),
+			Height: float32(height),
+		},
+		Color: color,
+	}
+}
+
+func (b *BorderLessButton) Render() {
+	mouse := rl.GetMousePosition()
+
+	text_s := rl.MeasureText(b.Label, b.Font)
+	if (mouse.X >= b.Body.X) && (mouse.X <= b.Body.X+b.Body.Width) && (mouse.Y >= b.Body.Y) && (mouse.Y <= b.Body.Y+b.Body.Height) {
+		rl.DrawText(
+			b.Label,
+			b.Body.ToInt32().X+(int32(b.Body.Width)-text_s)/2,
+			b.Body.ToInt32().Y+5,
+			b.Font, rl.Gray,
+		)
+	} else {
+		rl.DrawText(
+			b.Label,
+			b.Body.ToInt32().X+(int32(b.Body.Width)-text_s)/2,
+			b.Body.ToInt32().Y+5,
+			b.Font, rl.Black,
+		)
+	}
+	// rl.DrawRectangleLinesEx(b.Body, 5, b.Color)
+}
+
 type Text struct {
 	Label string
 	Font  int32

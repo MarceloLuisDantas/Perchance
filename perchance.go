@@ -4,18 +4,12 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type State int
-
-const (
-	FIGHTING State = iota
-	DRAW
-	WON
-)
-
 type GameState int
 
 const (
 	MAIN_MENU GameState = iota
+	CHAR_SELECT
+	BATTLE
 )
 
 const (
@@ -24,50 +18,40 @@ const (
 )
 
 func main() {
-	// state := MAIN_MENU
 
 	rl.InitWindow(WIDTH, HEIGHT, "Perchance")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(60)
 
 	main_menu := NewMainMenu()
+	char_select := NewCharacterSelection()
 
+	state := MAIN_MENU
+game_loop:
 	for !rl.WindowShouldClose() {
-		next, bt := main_menu.Update()
-		if next {
-			println(bt)
+		switch state {
+		case MAIN_MENU:
+			action := main_menu.Update()
+			if action == "EXIT" {
+				break game_loop
+			} else if action == "START" {
+				state = CHAR_SELECT
+			}
+		case CHAR_SELECT:
+			_ = char_select.Update()
 		}
 
 		rl.BeginDrawing()
 
-		main_menu.Render()
 		rl.ClearBackground(rl.White)
+		switch state {
+		case MAIN_MENU:
+			main_menu.Render()
+		case CHAR_SELECT:
+			char_select.Render()
+		}
 
 		rl.EndDrawing()
-
-		// if state == WON {
-		// 	var winner string
-		// 	for _, s := range spheres {
-		// 		if s.Alive {
-		// 			winner = s.Name
-		// 			break
-		// 		}
-		// 	}
-		// 	text_s := rl.MeasureText(winner, 100)
-		// 	rl.DrawText(
-		// 		winner,
-		// 		int32(400-float32(text_s/2)),
-		// 		int32(400),
-		// 		100, rl.Black,
-		// 	)
-		// } else if state == DRAW {
-		// 	text_s := rl.MeasureText("EMPATE", 100)
-		// 	rl.DrawText(
-		// 		"EMPATE",
-		// 		int32(400-float32(text_s/2)),
-		// 		int32(400),
-		// 		100, rl.Black,
-		// 	)
-		// }
 	}
+
 }
