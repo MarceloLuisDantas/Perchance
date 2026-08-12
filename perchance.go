@@ -21,10 +21,11 @@ func main() {
 
 	rl.InitWindow(WIDTH, HEIGHT, "Perchance")
 	defer rl.CloseWindow()
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(30)
 
 	main_menu := NewMainMenu()
 	char_select := NewCharacterSelection()
+	var battle Battle
 
 	state := MAIN_MENU
 game_loop:
@@ -38,7 +39,18 @@ game_loop:
 				state = CHAR_SELECT
 			}
 		case CHAR_SELECT:
-			_ = char_select.Update()
+			action := char_select.Update()
+			switch action {
+			case "BACK":
+				state = MAIN_MENU
+			case "BATTLE":
+				p1 := char_select.Chars[char_select.Player1]
+				p2 := char_select.Chars[char_select.Player2]
+				battle = NewBattle(p1, p2)
+				state = BATTLE
+			}
+		case BATTLE:
+			println(battle.Update())
 		}
 
 		rl.BeginDrawing()
@@ -49,6 +61,8 @@ game_loop:
 			main_menu.Render()
 		case CHAR_SELECT:
 			char_select.Render()
+		case BATTLE:
+			battle.Render()
 		}
 
 		rl.EndDrawing()

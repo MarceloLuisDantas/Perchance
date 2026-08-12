@@ -24,10 +24,10 @@ func NewCharacterSelection() CharacterSelection {
 		Player2:   0,
 	}
 
-	cs.Chars[0] = NewCharacter("LineyStiney", 50, rl.Red)
-	cs.Chars[1] = NewCharacter("SpikeyPikey", 40, rl.Black)
-	cs.Chars[2] = NewCharacter("SpookyDooky", 60, rl.Green)
-	cs.Chars[3] = NewCharacter("SickySticky", 40, rl.Blue)
+	cs.Chars[0] = NewCharacter("LineyStiney", 50, 500, 10, rl.Red)
+	cs.Chars[1] = NewCharacter("SpikeyPikey", 40, 500, 10, rl.Black)
+	cs.Chars[2] = NewCharacter("SpookyDooky", 60, 500, 10, rl.Green)
+	cs.Chars[3] = NewCharacter("SickySticky", 40, 500, 10, rl.Blue)
 
 	text_s := rl.MeasureText("SELECT YOUR WOOKY", 50)
 	cs.Texts[0] = Components.NewText(
@@ -50,11 +50,11 @@ func NewCharacterSelection() CharacterSelection {
 
 func (cs *CharacterSelection) Update() string {
 	for i, b := range cs.BLButtons {
-
 		if rl.CheckCollisionPointRec(rl.GetMousePosition(), b.Body) &&
 			rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
 			switch i {
 			case 0: // p1 prev
+				print("Prev to ", cs.Player1, " is: ")
 				if cs.Player1 == 0 {
 					cs.Player1 = len(cs.Chars) - 1
 				} else {
@@ -69,17 +69,25 @@ func (cs *CharacterSelection) Update() string {
 				}
 				println(cs.Player1)
 			case 2: // p2 prev
+				print("Prev to ", cs.Player2, " is: ")
 				if cs.Player2 == 0 {
 					cs.Player2 = len(cs.Chars) - 1
 				} else {
 					cs.Player2 -= 1
 				}
+				println(cs.Player1)
 			case 3: // p2 next
+				print("Next to ", cs.Player2, " is: ")
 				if cs.Player2 == len(cs.Chars)-1 {
 					cs.Player2 = 0
 				} else {
 					cs.Player2 += 1
 				}
+				println(cs.Player1)
+			case 4: // battle
+				return "BATTLE"
+			case 5: // back
+				return "BACK"
 			}
 		}
 	}
@@ -120,8 +128,6 @@ func (cs *CharacterSelection) CharSelectionSquare() {
 }
 
 func (cs *CharacterSelection) Render() {
-	rl.BeginDrawing()
-
 	cs.CharSelectionSquare()
 
 	for _, e := range cs.Texts {
@@ -131,6 +137,4 @@ func (cs *CharacterSelection) Render() {
 	for _, e := range cs.BLButtons {
 		e.Render()
 	}
-
-	rl.EndDrawing()
 }

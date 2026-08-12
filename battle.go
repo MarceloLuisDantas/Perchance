@@ -1,49 +1,85 @@
 package main
 
-// func Battle() State {
-// 	state := FIGHTING
+import rl "github.com/gen2brain/raylib-go/raylib"
 
-// 	spheres := make([]Sphere, 0)
-// 	spheres = append(spheres, NewSphere(
-// 		"Badingugilius", 200, 400, 50, rl.Red,
-// 		rl.Vector2{
-// 			X: float32(200 + rand.Int31n(150)),
-// 			Y: float32(450 + rand.Int31n(150))},
-// 		rl.Vector2{X: 5, Y: 0},
-// 	))
+type BattleState int
 
-// 	spheres = append(spheres, NewSphere(
-// 		"Smungulungus", 200, 400, 50, rl.Blue,
-// 		rl.Vector2{
-// 			X: 600 + rand.Float32(),
-// 			Y: 500 + rand.Float32(),
-// 		},
-// 		rl.Vector2{X: -10, Y: 0},
-// 	))
+const (
+	WAITING BattleState = iota
+	FIGHTING
+	P1_WIN
+	P2_WIN
+	DRAW
+)
 
-// 	for {
-// 		if state == FIGHTING {
-// 			RunPhysics(spheres)
-// 		}
-// 		state = RunLogic(spheres)
+type Battle struct {
+	P1    Character
+	P2    Character
+	State BattleState
+	Arena rl.Rectangle
+}
 
-// 		rl.BeginDrawing()
+func NewBattle(p1, p2 Character) Battle {
+	return Battle{
+		P1:    p1,
+		P2:    p2,
+		State: WAITING,
+		Arena: rl.Rectangle{
+			X: 30, Y: 250, Width: 740, Height: 520,
+		},
+	}
+}
 
-// 		rl.ClearBackground(rl.White)
-// 		rl.DrawRectangleLinesEx(
-// 			rl.Rectangle{X: 20, Y: 200, Width: 760, Height: 580},
-// 			5, rl.Black,
-// 		)
+func RenderLifeBar(player, max, current int32) {
+	border := rl.Rectangle{
+		X: 30, Y: 200, Width: 200, Height: 40,
+	}
 
-// 		for i := range spheres {
-// 			if spheres[i].Alive {
-// 				spheres[i].Draw()
-// 			}
-// 		}
+	if player == 2 {
+		border.X += 540
+	}
 
-// 		if state != FIGHTING {
-// 			return state
-// 		}
-// 		rl.EndDrawing()
-// 	}
-// }
+	current_hp_percentage := (current * 100) / max
+	current_bar := (current_hp_percentage * border.ToInt32().Width) / 100
+
+	if player == 2 {
+		rl.DrawRectangle(
+			border.ToInt32().X+200-current_bar,
+			border.ToInt32().Y,
+			current_bar,
+			border.ToInt32().Height,
+			rl.Green,
+		)
+	} else {
+		rl.DrawRectangle(
+			border.ToInt32().X,
+			border.ToInt32().Y,
+			current_bar,
+			border.ToInt32().Height,
+			rl.Green,
+		)
+	}
+	rl.DrawRectangleLinesEx(border, 4, rl.Black)
+}
+
+func (b *Battle) Render() {
+	p1 := b.P1
+	rl.DrawText(p1.Name, 30, 30, 30, rl.Black)
+	rl.DrawCircle(90, 130, 60, p1.Color)
+	RenderLifeBar(1, p1.MaxHp, p1.Hp)
+	print(b.P1.Hp)
+	b.P1.Hp -= 1
+
+	p2 := b.P2
+	text_s := rl.MeasureText(p2.Name, 30)
+	rl.DrawText(p2.Name, 770-text_s, 30, 30, rl.Black)
+	rl.DrawCircle(710, 130, 60, p2.Color)
+	RenderLifeBar(2, p2.MaxHp, p2.Hp)
+	b.P2.Hp -= 1
+
+	rl.DrawRectangleLinesEx(b.Arena, 5, rl.Black)
+}
+
+func (b *Battle) Update() string {
+	return "running"
+}

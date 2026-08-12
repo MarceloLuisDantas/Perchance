@@ -29,8 +29,6 @@ func NewButton(
 }
 
 func (b *Button) Render() {
-	mouse := rl.GetMousePosition()
-
 	text_s := rl.MeasureText(b.Label, b.Font)
 	rl.DrawText(
 		b.Label,
@@ -39,7 +37,7 @@ func (b *Button) Render() {
 		b.Font, rl.Black,
 	)
 
-	if (mouse.X >= b.Body.X) && (mouse.X <= b.Body.X+b.Body.Width) && (mouse.Y >= b.Body.Y) && (mouse.Y <= b.Body.Y+b.Body.Height) {
+	if rl.CheckCollisionPointRec(rl.GetMousePosition(), b.Body) {
 		rl.DrawRectangleLinesEx(b.Body, 7, b.Color)
 	} else {
 		rl.DrawRectangleLinesEx(b.Body, 5, b.Color)
@@ -71,10 +69,8 @@ func NewBorderlessButton(
 }
 
 func (b *BorderLessButton) Render() {
-	mouse := rl.GetMousePosition()
-
 	text_s := rl.MeasureText(b.Label, b.Font)
-	if (mouse.X >= b.Body.X) && (mouse.X <= b.Body.X+b.Body.Width) && (mouse.Y >= b.Body.Y) && (mouse.Y <= b.Body.Y+b.Body.Height) {
+	if rl.CheckCollisionPointRec(rl.GetMousePosition(), b.Body) {
 		rl.DrawText(
 			b.Label,
 			b.Body.ToInt32().X+(int32(b.Body.Width)-text_s)/2,
