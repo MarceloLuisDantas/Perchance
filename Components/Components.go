@@ -29,6 +29,14 @@ func NewButton(
 }
 
 func (b *Button) Render() {
+	rl.DrawRectangle(
+		b.Body.ToInt32().X,
+		b.Body.ToInt32().Y,
+		b.Body.ToInt32().Width,
+		b.Body.ToInt32().Height,
+		rl.White,
+	)
+
 	text_s := rl.MeasureText(b.Label, b.Font)
 	rl.DrawText(
 		b.Label,

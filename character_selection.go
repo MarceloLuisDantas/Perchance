@@ -17,17 +17,19 @@ type CharacterSelection struct {
 
 func NewCharacterSelection() CharacterSelection {
 	cs := CharacterSelection{
-		Chars:     make([]Character, 4),
+		Chars: []Character{
+			NewCharacter("LineyStiney", 50, 30, 10, rl.Red),
+			NewCharacter("SpikeyPikey", 40, 40, 10, rl.Black),
+			NewCharacter("SpookyDooky", 60, 50, 10, rl.Green),
+			NewCharacter("SickySticky", 40, 60, 10, rl.Blue),
+			NewCharacter("BatistusRistus", 170, 999999, 0, rl.Pink),
+			NewCharacter("ChuckNorris", 100, 9001, 9999, rl.Brown),
+		},
 		Texts:     make([]Components.Text, 1),
 		BLButtons: make([]Components.BorderLessButton, 6),
 		Player1:   0,
 		Player2:   0,
 	}
-
-	cs.Chars[0] = NewCharacter("LineyStiney", 50, 500, 10, rl.Red)
-	cs.Chars[1] = NewCharacter("SpikeyPikey", 40, 500, 10, rl.Black)
-	cs.Chars[2] = NewCharacter("SpookyDooky", 60, 500, 10, rl.Green)
-	cs.Chars[3] = NewCharacter("SickySticky", 40, 500, 10, rl.Blue)
 
 	text_s := rl.MeasureText("SELECT YOUR WOOKY", 50)
 	cs.Texts[0] = Components.NewText(
@@ -54,36 +56,29 @@ func (cs *CharacterSelection) Update() string {
 			rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
 			switch i {
 			case 0: // p1 prev
-				print("Prev to ", cs.Player1, " is: ")
 				if cs.Player1 == 0 {
 					cs.Player1 = len(cs.Chars) - 1
 				} else {
 					cs.Player1 -= 1
 				}
 			case 1: // p1 next
-				print("Next to ", cs.Player1, " is: ")
 				if cs.Player1 == len(cs.Chars)-1 {
 					cs.Player1 = 0
 				} else {
 					cs.Player1 += 1
 				}
-				println(cs.Player1)
 			case 2: // p2 prev
-				print("Prev to ", cs.Player2, " is: ")
 				if cs.Player2 == 0 {
 					cs.Player2 = len(cs.Chars) - 1
 				} else {
 					cs.Player2 -= 1
 				}
-				println(cs.Player1)
 			case 3: // p2 next
-				print("Next to ", cs.Player2, " is: ")
 				if cs.Player2 == len(cs.Chars)-1 {
 					cs.Player2 = 0
 				} else {
 					cs.Player2 += 1
 				}
-				println(cs.Player1)
 			case 4: // battle
 				return "BATTLE"
 			case 5: // back
@@ -105,7 +100,6 @@ func (cs *CharacterSelection) CharSelectionSquare() {
 	text_s := rl.MeasureText(p1.Name, 30)
 	rl.DrawText(p1.Name, 225-text_s/2, 200, 30, rl.Black)
 	rl.DrawCircle(225, 325, 60, p1.Color)
-	println(p1.Color.A, p1.Color.B, p1.Color.G)
 
 	radius := fmt.Sprintf("Radius: %2.f", p1.Radius)
 	text_s = rl.MeasureText(radius, 30)
